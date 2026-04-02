@@ -1,0 +1,68 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+*.iws
+*.ipr
+
+# Maven
+target/
+.mvn/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.m2/
+
+# Gradle
+.gradle/
+build/
+gradle-wrapper.jar
+.gradletasknamecache
+
+# Spring Boot
+*.jar
+*.war
+*.ear
+*.nar
+/bin/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Application
+application-local.properties
+application-prod.properties
+application-test.properties
+.env
+.env.local
+
+# Logs
+logs/
+*.log
+log4j.properties
+
+# Database
+*.db
+*.sqlite
+*.h2.db
+dump.rdb
+
+# Temp
+tmp/
+temp/
+*.tmp
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Node (if using npm scripts or tools)
+node_modules/
+npm-debug.log
+yarn-error.log
