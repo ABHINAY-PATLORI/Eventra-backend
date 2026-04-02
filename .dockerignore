@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+*.iml
+
+# Build
+target/
+build/
+dist/
+*.class
+
+# Maven
+.m2/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+
+# Test files
+src/test/
+baseline-test.log
+server.err.log
+server.out.log
+
+# Environment
+.env
+.env.local
