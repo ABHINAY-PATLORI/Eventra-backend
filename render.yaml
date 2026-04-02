@@ -1,0 +1,72 @@
+services:
+  # Web Service - Spring Boot Application
+  - type: web
+    name: eventra-backend
+    runtime: docker
+    repo: https://github.com/ABHINAY-PATLORI/Eventra-backend.git
+    branch: main
+    dockerfile: ./Dockerfile
+    port: 8080
+    
+    # Environment variables
+    envVars:
+      # Application Profile
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      
+      # Database (set these in Render dashboard)
+      - key: DB_HOST
+        fromDatabase:
+          name: mysql-db
+          property: host
+      - key: DB_PORT
+        value: 3306
+      - key: DB_NAME
+        value: college_events
+      - key: DB_USERNAME
+        fromDatabase:
+          name: mysql-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: mysql-db
+          property: password
+      
+      # Database Configuration
+      - key: DB_USE_SSL
+        value: "true"
+      - key: DB_POOL_SIZE
+        value: "20"
+      - key: DB_MIN_IDLE
+        value: "5"
+      - key: DDL_AUTO
+        value: validate
+      
+      # JWT Secret (MUST change this)
+      - key: JWT_SECRET
+        sync: false
+      
+      # Mail Configuration
+      - key: MAIL_HOST
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      
+      # Server
+      - key: SERVER_PORT
+        value: "8080"
+      - key: JPA_SHOW_SQL
+        value: "false"
+
+  # MySQL Database
+  - type: mysql
+    name: mysql-db
+    version: 8.0
+    ipAllowList: [] # Allow all IPs from your web service
+    plan: free # or upgrade to starter/pro

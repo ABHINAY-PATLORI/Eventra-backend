@@ -1,6 +1,38 @@
 # Render.com Deployment Guide
 
-## Quick Deploy to Render
+## Critical: Environment Variables Setup
+
+The most common deployment error is MySQL connection failure. This MUST be configured correctly:
+
+### Required Environment Variables
+
+**MUST SET in Render Dashboard:**
+
+```
+# Database (from Render MySQL resource)
+DB_HOST=<your-mysql-host>.mysql.render.com
+DB_PORT=3306
+DB_NAME=college_events
+DB_USERNAME=<admin or custom user>
+DB_PASSWORD=<your-database-password>
+
+# Application
+SPRING_PROFILES_ACTIVE=prod          # MUST be 'prod' for production
+DB_USE_SSL=true                       # MUST be true for production
+DDL_AUTO=validate                     # NEVER use 'create-drop' in prod
+
+# JWT (Generate random 32+ character string)
+JWT_SECRET=<generate-random-string-here>
+
+# Mail Configuration
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-specific-password
+MAIL_FROM=your-email@gmail.com
+```
+
+---
 
 ### Step 1: Create Database (MySQL)
 
@@ -109,20 +141,70 @@ curl https://eventra-backend.onrender.com/health
 3. Update environment variables (re-deploy auto-triggers)
 4. Check database is in same region
 
-### Error: "failed to read dockerfile: open Dockerfile: no such file or directory"
+### Error: "Connection refused" or "Unable to open JDBC Connection"
 
-**Cause**: Dockerfile not in repository root
+**This is the most common deployment error.**
 
-**Fix**:
-```bash
-# Ensure Dockerfile exists in root
-ls -la Dockerfile
+**Exact fixes (in order):**
 
-# Commit and push
-git add Dockerfile
-git commit -m "Add Dockerfile"
-git push origin main
-```
+1. **Verify database exists first**
+   - Go to Render Dashboard → Resources
+   - Confirm MySQL database is showing as "Available"
+   - If not, wait 2-3 minutes for deployment to complete
+
+2. **Double-check all environment variables**
+   ```
+   DB_HOST=<your-mysql>.mysql.render.com  (NOT localhost!)
+   DB_PORT=3306
+   DB_USERNAME=admin
+   DB_PASSWORD=<exact password from database>
+   SPRING_PROFILES_ACTIVE=prod
+   ```
+
+3. **Test database connection directly**
+   - From your local machine:
+   ```bash
+   mysql -h <your-mysql>.mysql.render.com -u admin -p
+   # (Enter password when prompted)
+   ```
+   - If this works, database is accessible
+   - If not, database may not be fully deployed yet
+
+4. **Restart web service**
+   - Go to Render Dashboard
+   - Service → Manual Deploy → Deploy latest commit
+   - Wait 5-10 minutes for deployment
+
+5. **Check logs in real-time**
+   - Service → Logs tab
+   - Look for these good signs:
+   ```
+   Starting Spring Boot Application
+   ✓ Email transporter is ready
+   Tomcat started on port 8080
+   ```
+   - Look for these error signs:
+   ```
+   Connection refused
+   Communications link failure
+   Unable to open JDBC Connection
+   ```
+
+6. **If still failing after 10 minutes**
+   - Delete service and recreate
+   - Ensure database is deployed first
+   - Wait 5 minutes
+   - Create web service
+   - Set env vars again
+   - Deploy
+
+---
+
+### Error: "Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory'"
+
+This means the Hibernate EntityManager couldn't initialize because database connection failed. Same fix as above - verify DB_HOST and credentials.
+
+---
 
 ### Build Takes Too Long
 
